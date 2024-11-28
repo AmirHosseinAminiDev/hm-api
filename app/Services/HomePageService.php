@@ -14,42 +14,72 @@ class HomePageService
     /**
      * @return Collection
      */
-    public function getPinnedQuestions(): Collection
+    public function getPinnedQuestions($category = null): Collection
     {
-        return Question::where('is_pinned', 1)
+
+        if($category === null){
+            return Question::where('is_pinned', 1)
             ->with('activity')
             ->leftJoin('questions_activity', 'questions.id', '=', 'questions_activity.question_id')
             ->orderBy('questions_activity.last_activity', 'desc')
             ->select('questions.*')
             ->get();
+        }else{
+
+           $questions = Question::where('is_pinned', 1)
+            ->where('category_id' , $category)
+            ->with('activity')
+            ->leftJoin('questions_activity', 'questions.id', '=', 'questions_activity.question_id')
+            ->orderBy('questions_activity.last_activity', 'desc')
+            ->select('questions.*')
+            ->get();
+
+            return $questions;
+        }
+
     }
-
-
     /**
      * @return mixed
      */
-    public function getLatestQuestions(): mixed
+    public function getLatestQuestions($category = null): mixed
     {
-        return Question::where('is_pinned', 0)
+        if($category === null){
+            return Question::where('is_pinned', 0)
             ->with('activity')
             ->leftJoin('questions_activity', 'questions.id', '=', 'questions_activity.question_id')
             ->orderBy('questions_activity.last_activity', 'desc')
             ->select('questions.*')
             ->take(5)
             ->get();
+        }else{
+            $questions =  Question::where('is_pinned', 0)
+            ->where('category_id' , $category)
+            ->with('activity')
+            ->leftJoin('questions_activity', 'questions.id', '=', 'questions_activity.question_id')
+            ->orderBy('questions_activity.last_activity', 'desc')
+            ->select('questions.*')
+            ->take(5)
+            ->get();
+              return $questions;
+        }
+
     }
 
     /**
      * @return mixed
      */
+
     public function getLatestCategories(): mixed
     {
-        return Category::join('categories_activity', 'categories.id', '=', 'categories_activity.category_id')
+
+            return Category::join('categories_activity', 'categories.id', '=', 'categories_activity.category_id')
             ->orderByDesc('categories_activity.last_activity')
             ->select('categories.*')
             ->where('status', 'active')
             ->limit(12)
             ->get();
+
+
     }
 
     /**

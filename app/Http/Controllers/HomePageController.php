@@ -9,11 +9,14 @@ use App\Http\Resources\MostVieweQuestions;
 use App\Http\Resources\PinnedQuestions;
 use App\Http\Resources\Statistics;
 use App\Services\HomePageService;
+use  Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class HomePageController extends Controller
 {
     public $homePageService;
+
+
 
     public function __construct()
     {
@@ -23,11 +26,13 @@ class HomePageController extends Controller
     /**
      * @return array{pinnedQuestions: AnonymousResourceCollection}
      */
-    public function index(): array
+    public function index(Request $request): array
     {
+
+       
         $latestCategories = $this->homePageService->getLatestCategories();
-        $pinnedQuestions = $this->homePageService->getPinnedQuestions();
-        $latestQuestions = $this->homePageService->getLatestQuestions();
+        $pinnedQuestions = $this->homePageService->getPinnedQuestions($request->category);
+        $latestQuestions = $this->homePageService->getLatestQuestions($request->category);
         return [
             'latestCategories' => LatestCategories::collection($latestCategories),
             'pinnedQuestions' => PinnedQuestions::collection($pinnedQuestions),
