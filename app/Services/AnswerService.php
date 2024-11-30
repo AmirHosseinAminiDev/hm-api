@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Answer;
+use App\Models\Question;
 
 class AnswerService
 {
@@ -13,7 +14,19 @@ class AnswerService
      */
     public function create($data): mixed
     {
-        return Answer::create($data);
+
+        $answer = Answer::create($data);
+
+
+        $question = Question::where('id', $answer->question_id)
+            ->with(['activity', 'category'])->first();
+        $question->activity()->update([
+            'last_activity' => now()
+        ]);
+        $question->category->activity()->update([
+            'last_activity' => now()
+        ]);
+        return $answer;
     }
 
     /**
@@ -25,6 +38,16 @@ class AnswerService
     {
         $answer = Answer::where('id', $answerId)->first();
         $answer->update($data);
+
+        $question = Question::where('id', $answer->question_id)
+            ->with(['activity' , 'category'])->first();
+        $question->activity()->update([
+            'last_activity' => now()
+        ]);
+        $question->category->activity()->update([
+            'last_activity' => now()
+        ]);
+
         return $answer;
     }
 

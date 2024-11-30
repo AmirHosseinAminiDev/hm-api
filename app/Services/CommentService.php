@@ -22,6 +22,7 @@ class CommentService
                 $commentableType = Question::class;
                 break;
         }
+
         $comment = Comment::create([
             'user_id' => $userId,
             'commentable_id' => $commentableId,
@@ -30,6 +31,17 @@ class CommentService
             'status' => $status,
             'old_question_id' => 0,
         ]);
+        if($commentableType == Question::class){
+            $question =  Question::where('id' , $commentableId)
+            ->with(['activity','category'])->first();
+            $question->activity()->update([
+                'last_activity' => now()
+            ]);
+
+            $question->category->activity()->update([
+                'last_activity' => now()
+            ]);
+        }
 
         return $comment;
     }
@@ -54,6 +66,16 @@ class CommentService
             'updated_at' => now(),
         ]);
 
+        if($comment->commentable_type == Question::class){
+            $question =  Question::where('id' , $comment->commentable_id)
+            ->with(['activity', 'category'])->first();
+            $question->activity()->update([
+                'last_activity' => now()
+            ]);
+            $question->category->activity()->update([
+                'last_activity' => now()
+            ]);
+        }
         return $comment;
     }
 

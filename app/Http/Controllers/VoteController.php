@@ -21,6 +21,7 @@ class VoteController extends Controller
      */
     public function createVote(CreateVoteRequest $request): \Illuminate\Http\JsonResponse
     {
+        // dd($request->all());
         $vote = $this->voteService->create(
             $request->getVoteModel(),
             $request->getVoteId(),

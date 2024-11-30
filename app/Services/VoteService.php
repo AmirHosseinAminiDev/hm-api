@@ -22,6 +22,22 @@ class VoteService
         $existingVote->vote_type = $existingVote->exists ? ($existingVote->vote_type == 1 ? 0 : 1) : $voteType;
         $existingVote->save();
 
+        if($voteableType == Question::class){
+            $question =  Question::where('id' , $voteId)
+            ->with(['activity' ,'category'])->first();
+            $question->activity()->update([
+                'last_activity' => now()
+            ]);
+
+            $question->category->activity()->update([
+                'last_activity' => now()
+            ]);
+
+
+
+
+        }
+
         return $existingVote;
     }
 
