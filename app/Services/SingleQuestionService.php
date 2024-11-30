@@ -13,7 +13,9 @@ class SingleQuestionService
         Cache::forget("single-question-{$slug}");
         return Cache::remember("single-question-{$slug}", 60, function () use ($slug) {
             $question = Question::where('slug', $slug)->first();
-            $question->increment('views');
+            if($question){
+                $question->increment('views');
+            }
             return $question;
         });
     }

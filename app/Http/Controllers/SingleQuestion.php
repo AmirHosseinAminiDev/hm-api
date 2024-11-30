@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
+use App\Models\UserPinnedQuestion;
 use App\Services\SingleQuestionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -83,9 +84,12 @@ class SingleQuestion extends Controller
      */
     public function pinSingleQuestion($slug): JsonResponse|\App\Http\Resources\SingleQuestion
     {
+
         $question = $this->questionService->getSpecificQuestion($slug);
+        // dd($question);
         if ($question) {
             $question->update(['is_pinned' => 1]);
+            $this->createQuestionPinnRecord($question);
             return \App\Http\Resources\SingleQuestion::make($question);
         } else {
             return response()->json([
@@ -94,5 +98,38 @@ class SingleQuestion extends Controller
             ]);
         }
     }
+
+    public function unpinSingleQuestion($slug): JsonResponse|\App\Http\Resources\SingleQuestion
+    {
+        $question = $this->questionService->getSpecificQuestion($slug);
+        if ($question) {
+            $question->update(['is_pinned' => 0]);
+            $this->deleteQuestionPinnRecord($question);
+            return \App\Http\Resources\SingleQuestion::make($question);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'سوال موردنظر یافت نشد'
+            ]);
+        }
+    }
+
+    protected function createQuestionPinnRecord($question)
+    {
+        UserPinnedQuestion::create([
+            'question_id' => $question->id,
+            'user_id' => $question->user_id,
+            'created_at'=> now(),
+            'updated_at' => now()
+        ]);
+    }
+    protected function deleteQuestionPinnRecord($question)
+    {
+        UserPinnedQuestion::where('question_id' , $question->id)->delete();
+
+    }
+
+
+
 
 }

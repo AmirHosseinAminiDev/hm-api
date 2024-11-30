@@ -80,4 +80,9 @@ class Question extends Model
     {
         return $this->votes()->where('vote_type', 0)->count();
     }
+
+    public function userPinnedQuestion()
+    {
+        return $this->belongsToMany(User::class , 'user_pinned_questions');
+    }
 }

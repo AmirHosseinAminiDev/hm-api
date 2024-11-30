@@ -27,6 +27,7 @@ Route::prefix('/questions/question')->group(function () {
     Route::delete('delete/{slug}', [SingleQuestion::class, 'deleteSingleQuestion']);
     Route::post('/{slug}', [SingleQuestion::class, 'updateSingleQuestion']);
     Route::post('/pin/{slug}', [SingleQuestion::class, 'pinSingleQuestion']);
+    Route::post('/unpin/{slug}', [SingleQuestion::class, 'unpinSingleQuestion']);
 });
 //=============
 //COMMENT APIS

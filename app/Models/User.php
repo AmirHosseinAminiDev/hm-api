@@ -71,6 +71,11 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
+    public function pinnedQuestions()
+    {
+        return $this->belongsToMany(Question::class , 'user_pinned_questions');
+    }
+
     public function level()
     {
         return $this->belongsTo(Level::class);
