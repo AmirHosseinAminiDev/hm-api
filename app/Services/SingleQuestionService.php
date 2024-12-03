@@ -12,7 +12,6 @@ class SingleQuestionService
 {
     public function getSpecificQuestion($slug)
     {
-        Cache::forget("single-question-{$slug}");
         return Cache::remember("single-question-{$slug}", 60, function () use ($slug) {
             $question = Question::where('slug', $slug)->first();
             if ($question) {
