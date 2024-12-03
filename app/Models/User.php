@@ -91,4 +91,9 @@ class User extends Authenticatable
             $this->save();
         }
     }
+
+    public function questionAnswerRecords()
+    {
+        return $this->belongsToMany(Question::class , 'user_correct_answer_records');
+    }
 }

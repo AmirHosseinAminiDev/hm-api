@@ -83,6 +83,11 @@ class Question extends Model
 
     public function userPinnedQuestion()
     {
-        return $this->belongsToMany(User::class , 'user_pinned_questions');
+        return $this->belongsToMany(User::class, 'user_pinned_questions');
+    }
+
+    public function userAnswerRecords()
+    {
+        return $this->belongsToMany(User::class, 'user_correct_answer_records');
     }
 }

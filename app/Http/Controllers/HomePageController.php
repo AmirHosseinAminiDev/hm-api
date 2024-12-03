@@ -11,12 +11,11 @@ use App\Http\Resources\Statistics;
 use App\Services\HomePageService;
 use  Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Artisan;
 
 class HomePageController extends Controller
 {
     public $homePageService;
-
-
 
     public function __construct()
     {
@@ -28,8 +27,6 @@ class HomePageController extends Controller
      */
     public function index(Request $request): array
     {
-
-       
         $latestCategories = $this->homePageService->getLatestCategories();
         $pinnedQuestions = $this->homePageService->getPinnedQuestions($request->category);
         $latestQuestions = $this->homePageService->getLatestQuestions($request->category);

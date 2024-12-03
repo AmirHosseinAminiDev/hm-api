@@ -91,4 +91,20 @@ class CommentController extends Controller
             'status' => 404
         ]);
     }
+
+    public function updateCommentStatus($id): JsonResponse
+    {
+        $comment = $this->commentService->findById($id);
+        if ($comment) {
+            $this->commentService->updateStatus($comment);
+            return response()->json([
+                'message' => 'نظر با موفقیت بروز شد',
+                'status' => 200
+            ]);
+        }
+        return response()->json([
+            'message' => 'نظر یافت نشد',
+            'status' => 404
+        ]);
+    }
 }

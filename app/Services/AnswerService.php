@@ -16,7 +16,9 @@ class AnswerService
     {
 
         $answer = Answer::create($data);
-
+        $answer->update([
+            'is_accepted' => 0,
+        ]);
 
         $question = Question::where('id', $answer->question_id)
             ->with(['activity', 'category'])->first();
@@ -25,6 +27,10 @@ class AnswerService
         ]);
         $question->category->activity()->update([
             'last_activity' => now()
+        ]);
+        $author = $answer->user;
+        $author->update([
+            'score' => $author->score + config('points.answer_question'),
         ]);
         return $answer;
     }
@@ -40,7 +46,7 @@ class AnswerService
         $answer->update($data);
 
         $question = Question::where('id', $answer->question_id)
-            ->with(['activity' , 'category'])->first();
+            ->with(['activity', 'category'])->first();
         $question->activity()->update([
             'last_activity' => now()
         ]);

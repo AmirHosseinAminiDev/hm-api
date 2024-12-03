@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enum\LevelEnum;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
 class SingleQuestionService
@@ -13,11 +15,17 @@ class SingleQuestionService
         Cache::forget("single-question-{$slug}");
         return Cache::remember("single-question-{$slug}", 60, function () use ($slug) {
             $question = Question::where('slug', $slug)->first();
-            if($question){
+            if ($question) {
                 $question->increment('views');
             }
             return $question;
         });
+    }
+
+
+    public function getSpecificQuestionById($id)
+    {
+        return Question::findOrFail($id);
     }
 
     /**
@@ -83,7 +91,7 @@ class SingleQuestionService
             'content' => $data['content'],
             'user_id' => $data['user_id'],
             'is_pinned' => $data['is_pinned'],
-            'status' => $data['status'],
+            'status' => $this->getQuestionStatus($data['user_id']),
             'old_id' => 0,
         ]);
         $question->activity()->create([
@@ -97,6 +105,39 @@ class SingleQuestionService
         }
 
         return $question;
+    }
+
+    public function updateQuestionStatus(Question $question)
+    {
+        $question->update([
+            'status' => $question->status == 1 ? 0 : 1,
+        ]);
+
+        $question->activity()->update([
+            'last_activity' => now(),
+        ]);
+
+        $question->category->activity()->update([
+            'last_activity' => now(),
+        ]);
+        if ($question->status == 1) {
+            $author = $question->user;
+            $author->update([
+                'score' => $author->score + config('points.publish_question'),
+            ]);
+        }
+        return $question;
+    }
+
+    protected function getQuestionStatus($user_id)
+    {
+        $user = User::find($user_id);
+        $levelSlug = $user->level->slug;
+        if ($levelSlug == LevelEnum::LEVEL_ZERO->value || $levelSlug == LevelEnum::LEVEL_ONE->value) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
 }

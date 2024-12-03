@@ -26,6 +26,7 @@ class LatestQuestionsResource extends JsonResource
             'last_activity' => $this->activity->last_activity,
             'author' => $this->user->name ?? 'admin',
             'votes_count' => $this->votes->where('vote_type', 1)->count(),
+            'status' => $this->status,
         ];
     }
 }
